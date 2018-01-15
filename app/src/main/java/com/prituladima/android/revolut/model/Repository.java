@@ -37,15 +37,16 @@ public class Repository {
         return currencyAPI.getCurrencies(base, amount)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(new Func1<RemoteCurrencyDTO, List<Currency>>() {
-                    @Override
-                    public List<Currency> call(RemoteCurrencyDTO remoteCurrencyDTO) {
+                .map(remoteCurrencyDTO -> localStorage.saveCurrencies(remoteCurrencyDTO))
+                .onErrorReturn(throwable -> localStorage.getCurrencies())
+                .map((remoteCurrencyDTO) -> {
                         List<Currency> list = new ArrayList<>();
                         for(Map.Entry<String, Double> current: remoteCurrencyDTO.rates().entrySet())
                             list.add(Currency.create(current.getKey(), current.getValue()));
                         return list;
                     }
-                });
+                )
+                .onErrorReturn(throwable -> new ArrayList<>());
     }
 
 }

@@ -13,13 +13,13 @@ public class HawkLocalStorage {
     public HawkLocalStorage() {
     }
 
-    public RemoteCurrencyDTO saveTop(RemoteCurrencyDTO remoteCurrencyDTO, int amount, String page) {
-        Hawk.put(HawkKeyStorage.getRedditTopKey(amount, page), remoteCurrencyDTO);
+    public RemoteCurrencyDTO saveCurrencies(RemoteCurrencyDTO remoteCurrencyDTO) {
+        Hawk.put(HawkKeyStorage.getCurrencyKey(), remoteCurrencyDTO);
         return remoteCurrencyDTO;
     }
 
-    public RemoteCurrencyDTO getTop(int amount, String page) {
-        return Hawk.get(HawkKeyStorage.getRedditTopKey(amount, page));
+    public RemoteCurrencyDTO getCurrencies() {
+        return Hawk.get(HawkKeyStorage.getCurrencyKey());
     }
 
 }
