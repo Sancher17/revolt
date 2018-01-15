@@ -8,6 +8,7 @@ public interface LastCurrencyContract {
 
     interface ILastCurrencyView extends IView {
         void onCurrencyUpdated(List<Currency> list);
+        void onNoData();
     }
 
     interface ILastCurrencyPresenter {

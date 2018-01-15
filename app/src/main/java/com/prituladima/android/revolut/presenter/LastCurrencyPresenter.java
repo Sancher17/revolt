@@ -48,16 +48,13 @@ public class LastCurrencyPresenter extends BasePresenter<LastCurrencyContract.IL
     @Override
     public void getLastUpdatedCurrency() {
         subscription = repository.updateCurrencies("USD", 1)
-                .subscribe(new Action1<List<Currency>>() {
-                    @Override
-                    public void call(List<Currency> list) {
-                        getMvpView().onCurrencyUpdated(list);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-
-                    }
-                });
+                .subscribe(
+                        list -> {
+                            if (!list.isEmpty())
+                                getMvpView().onCurrencyUpdated(list);
+                            else
+                                getMvpView().onNoData();
+                        }
+                );
     }
 }
