@@ -1,0 +1,51 @@
+package com.prituladima.android.revolut.model;
+
+import com.prituladima.android.revolut.RevolutApplication;
+import com.prituladima.android.revolut.model.api.CurrencyAPI;
+import com.prituladima.android.revolut.model.db.HawkLocalStorage;
+import com.prituladima.android.revolut.model.dto.Currency;
+import com.prituladima.android.revolut.model.dto.RemoteCurrencyDTO;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import retrofit2.http.Path;
+import rx.Observable;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
+
+@Singleton
+public class Repository {
+
+    @Inject
+    CurrencyAPI currencyAPI;
+    @Inject
+    HawkLocalStorage localStorage;
+
+    @Inject
+    public Repository() {
+        RevolutApplication.getInjector().inject(this);
+    }
+
+    public Observable<List<Currency>> updateCurrencies(String base, int amount) {
+        return currencyAPI.getCurrencies(base, amount)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Func1<RemoteCurrencyDTO, List<Currency>>() {
+                    @Override
+                    public List<Currency> call(RemoteCurrencyDTO remoteCurrencyDTO) {
+                        List<Currency> list = new ArrayList<>();
+                        for(Map.Entry<String, Double> current: remoteCurrencyDTO.rates().entrySet())
+                            list.add(Currency.create(current.getKey(), current.getValue()));
+                        return list;
+                    }
+                });
+    }
+
+}
