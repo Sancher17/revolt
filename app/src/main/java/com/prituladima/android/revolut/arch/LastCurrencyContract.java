@@ -12,6 +12,7 @@ public interface LastCurrencyContract {
     }
 
     interface ILastCurrencyPresenter {
+        void getLastUpdatedCurrency(String code, Double amount);
         void getLastUpdatedCurrency();
     }
 

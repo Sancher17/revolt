@@ -1,19 +1,19 @@
 package com.prituladima.android.revolut.presenter;
 
+import android.content.Context;
+import android.content.Intent;
+
 import com.prituladima.android.revolut.RevolutApplication;
 import com.prituladima.android.revolut.arch.BasePresenter;
 import com.prituladima.android.revolut.arch.LastCurrencyContract;
 import com.prituladima.android.revolut.model.Repository;
-import com.prituladima.android.revolut.model.dto.Currency;
+import com.prituladima.android.revolut.services.UpdateService;
 import com.prituladima.android.revolut.util.Logger;
-
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Subscription;
-import rx.functions.Action1;
 
 @Singleton
 public class LastCurrencyPresenter extends BasePresenter<LastCurrencyContract.ILastCurrencyView>
@@ -25,6 +25,8 @@ public class LastCurrencyPresenter extends BasePresenter<LastCurrencyContract.IL
 
     @Inject
     Repository repository;
+    @Inject
+    Context context;
 
     @Inject
     public LastCurrencyPresenter() {
@@ -33,21 +35,26 @@ public class LastCurrencyPresenter extends BasePresenter<LastCurrencyContract.IL
 
     @Override
     public void attachView(LastCurrencyContract.ILastCurrencyView view) {
+        LOGGER.log("attachView");
         super.attachView(view);
         getLastUpdatedCurrency();
+        context.startService(new Intent(context, UpdateService.class));
     }
 
     @Override
     public void detachView() {
-        super.detachView();
+        LOGGER.log("detachView");
         if (subscription != null && subscription.isUnsubscribed()) {
             subscription.unsubscribe();
         }
+        context.stopService(new Intent(context, UpdateService.class));
+        super.detachView();
     }
 
     @Override
-    public void getLastUpdatedCurrency() {
-        subscription = repository.updateCurrencies("USD", 1)
+    public void getLastUpdatedCurrency(String code, Double amount) {
+        LOGGER.log("getLastUpdatedCurrency");
+        subscription = repository.updateCurrencies(code, amount)
                 .subscribe(
                         list -> {
                             if (!list.isEmpty())
@@ -57,4 +64,11 @@ public class LastCurrencyPresenter extends BasePresenter<LastCurrencyContract.IL
                         }
                 );
     }
+
+    @Override
+    public void getLastUpdatedCurrency() {
+        getLastUpdatedCurrency("USD", 1.0);
+    }
+
+
 }

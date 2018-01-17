@@ -58,6 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:padding="4dp"
+            android:inputType="number"
             android:textSize="@dimen/text_large_title"
             tools:text="20.12" />
     </LinearLayout>

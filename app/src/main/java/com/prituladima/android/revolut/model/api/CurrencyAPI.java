@@ -15,14 +15,13 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
 
 public interface CurrencyAPI {
 
     @GET("latest")
-    Observable<RemoteCurrencyDTO> getCurrencies(@Query("base") String base, @Query("amount") int amount);
+    Observable<RemoteCurrencyDTO> getCurrencies(@Query("base") String base, @Query("amount") Double amount);
 
     class Factory {
 

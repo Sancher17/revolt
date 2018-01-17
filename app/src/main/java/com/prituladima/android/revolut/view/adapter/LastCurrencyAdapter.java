@@ -13,6 +13,8 @@ import android.widget.TextView;
 import com.prituladima.android.revolut.R;
 import com.prituladima.android.revolut.RevolutApplication;
 import com.prituladima.android.revolut.model.dto.Currency;
+import com.prituladima.android.revolut.util.LiteTextWatcher;
+import com.prituladima.android.revolut.util.UpdateCurrenciesListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,10 @@ import static com.prituladima.android.revolut.util.CurrencyUtil.getFlagResByISO;
 
 public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapter.ViewHolder> {
 
-    private List<Currency> list = new ArrayList<>();
+    private List<Currency> actualList = new ArrayList<>();
+//    private List<Currency> changedList = new ArrayList<>();
+
+    private UpdateCurrenciesListener textWatcher;
     @Inject
     public Context context;
 
@@ -37,26 +42,48 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
     }
 
     public void setData(List<Currency> list) {
-        this.list = list;
+        this.actualList = list;
+//        changedList = new ArrayList<>(actualList);
         notifyDataSetChanged();
+    }
+
+    public void setTextListener(UpdateCurrenciesListener watcher){
+        textWatcher = watcher;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list, parent, false));
     }
-
+    boolean bind;
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.currency_edit_text.setText(String.valueOf(list.get(position).value()));
-        holder.flag_image_view.setImageResource(getFlagResByISO(list.get(position).name()));
-        holder.text_iso.setText(list.get(position).name());
-        holder.text_name.setText(getCurrencyNameResByISO(list.get(position).name()));
+        bind = true;
+        Currency current = actualList.get(position);
+        holder.currency_edit_text.setText(String.valueOf(current.value()));
+        holder.flag_image_view.setImageResource(getFlagResByISO(current.name()));
+        holder.text_iso.setText(current.name());
+        holder.text_name.setText(getCurrencyNameResByISO(current.name()));
+        holder.card_view.setOnClickListener((view) -> moveToFirst(position));
+        holder.currency_edit_text.addTextChangedListener((LiteTextWatcher)(s, start, before, count)-> {
+            if(!bind) updateList(current.name(), Double.parseDouble(s.toString()));
+        });
+        bind = false;
+    }
+
+    private void moveToFirst(int position){
+//        changedList = new ArrayList<>(actualList);
+//        changedList.add(0, changedList.remove(position));
+//        setData(changedList);
+    }
+
+    private void updateList(String code, Double amount){
+        textWatcher.onUpdateData(code, amount);
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return actualList.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -80,6 +107,7 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+
     }
 
 }

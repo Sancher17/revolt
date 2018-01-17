@@ -15,7 +15,9 @@ import com.prituladima.android.revolut.RevolutApplication;
 import com.prituladima.android.revolut.arch.LastCurrencyContract;
 import com.prituladima.android.revolut.model.dto.Currency;
 import com.prituladima.android.revolut.presenter.LastCurrencyPresenter;
+import com.prituladima.android.revolut.util.LiteTextWatcher;
 import com.prituladima.android.revolut.util.Logger;
+import com.prituladima.android.revolut.util.UpdateCurrenciesListener;
 import com.prituladima.android.revolut.view.adapter.LastCurrencyAdapter;
 
 import java.util.List;
@@ -30,7 +32,7 @@ import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 public class LastCurrencyActivity extends AppCompatActivity
-        implements LastCurrencyContract.ILastCurrencyView, Action1<Void> {
+        implements LastCurrencyContract.ILastCurrencyView, Action1<Void>, UpdateCurrenciesListener {
 
     private static Logger LOGGER = Logger.build(LastCurrencyActivity.class);
 
@@ -58,6 +60,8 @@ public class LastCurrencyActivity extends AppCompatActivity
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(defaultItemAnimator);
+        adapter.setTextListener(this);
+        
         empty_view.setVisibility(INVISIBLE);
     }
 
@@ -92,5 +96,10 @@ public class LastCurrencyActivity extends AppCompatActivity
     public void call(Void aVoid) {
         LOGGER.log("updating data");
         lastCurrencyPresenter.getLastUpdatedCurrency();
+    }
+
+    @Override
+    public void onUpdateData(String code, Double amount) {
+        lastCurrencyPresenter.getLastUpdatedCurrency(code, amount);
     }
 }
