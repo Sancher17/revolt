@@ -14,7 +14,9 @@ import com.prituladima.android.revolut.R;
 import com.prituladima.android.revolut.RevolutApplication;
 import com.prituladima.android.revolut.model.dto.Currency;
 import com.prituladima.android.revolut.util.LiteTextWatcher;
+import com.prituladima.android.revolut.util.Logger;
 import com.prituladima.android.revolut.util.UpdateCurrenciesListener;
+import com.prituladima.android.revolut.view.LastCurrencyActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +25,17 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.michaelrocks.paranoid.Obfuscate;
 
 import static com.prituladima.android.revolut.util.CurrencyUtil.getCurrencyNameResByISO;
 import static com.prituladima.android.revolut.util.CurrencyUtil.getFlagResByISO;
 
+@Obfuscate
 public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapter.ViewHolder> {
 
+    private static Logger LOGGER = Logger.build(LastCurrencyAdapter.class);
+
     private List<Currency> actualList = new ArrayList<>();
-//    private List<Currency> changedList = new ArrayList<>();
 
     private UpdateCurrenciesListener textWatcher;
     @Inject
@@ -43,11 +48,10 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
 
     public void setData(List<Currency> list) {
         this.actualList = list;
-//        changedList = new ArrayList<>(actualList);
         notifyDataSetChanged();
     }
 
-    public void setTextListener(UpdateCurrenciesListener watcher){
+    public void setTextListener(UpdateCurrenciesListener watcher) {
         textWatcher = watcher;
     }
 
@@ -55,29 +59,24 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list, parent, false));
     }
-    boolean bind;
+
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        bind = true;
         Currency current = actualList.get(position);
         holder.currency_edit_text.setText(String.valueOf(current.value()));
         holder.flag_image_view.setImageResource(getFlagResByISO(current.name()));
         holder.text_iso.setText(current.name());
         holder.text_name.setText(getCurrencyNameResByISO(current.name()));
         holder.card_view.setOnClickListener((view) -> moveToFirst(position));
-        holder.currency_edit_text.addTextChangedListener((LiteTextWatcher)(s, start, before, count)-> {
-            if(!bind) updateList(current.name(), Double.parseDouble(s.toString()));
-        });
-        bind = false;
     }
 
-    private void moveToFirst(int position){
+    private void moveToFirst(int position) {
 //        changedList = new ArrayList<>(actualList);
 //        changedList.add(0, changedList.remove(position));
 //        setData(changedList);
     }
 
-    private void updateList(String code, Double amount){
+    private void updateList(String code, Double amount) {
         textWatcher.onUpdateData(code, amount);
     }
 

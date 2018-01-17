@@ -3,10 +3,8 @@ package com.prituladima.android.revolut.util;
 import android.text.Editable;
 import android.text.TextWatcher;
 
-
+//todo remove
 public interface LiteTextWatcher extends TextWatcher {
-
-
 
     @Override
     public default void beforeTextChanged(CharSequence s, int start, int count, int after) {

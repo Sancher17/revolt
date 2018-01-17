@@ -12,10 +12,10 @@ import java.lang.reflect.Type;
 
 public class HawkAutoValueParser implements Parser {
 
-    private final Gson mGson;
+    private final Gson gson;
 
     public HawkAutoValueParser() {
-        mGson = new GsonBuilder().registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory()).create();
+        gson = new GsonBuilder().registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory()).create();
     }
 
     @Override
@@ -23,12 +23,12 @@ public class HawkAutoValueParser implements Parser {
         if (TextUtils.isEmpty(content)) {
             return null;
         }
-        return mGson.fromJson(content, type);
+        return gson.fromJson(content, type);
     }
 
     @Override
     public String toJson(Object body) {
-        return mGson.toJson(body);
+        return gson.toJson(body);
     }
 
 }

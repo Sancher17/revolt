@@ -5,6 +5,9 @@ import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.SerializedName;
 
+import io.michaelrocks.paranoid.Obfuscate;
+
+@Obfuscate
 @AutoValue
 public abstract class Currency {
 

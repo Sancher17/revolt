@@ -12,6 +12,9 @@ import com.prituladima.android.revolut.dagger.Injector;
 import com.prituladima.android.revolut.model.db.HawkAutoValueParser;
 import com.prituladima.android.revolut.util.Logger;
 
+import io.michaelrocks.paranoid.Obfuscate;
+
+@Obfuscate
 public class RevolutApplication extends Application {
 
     private Logger LOGGER = Logger.build(RevolutApplication.class);

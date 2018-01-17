@@ -13,8 +13,10 @@ import com.prituladima.android.revolut.util.Logger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.michaelrocks.paranoid.Obfuscate;
 import rx.Subscription;
 
+@Obfuscate
 @Singleton
 public class LastCurrencyPresenter extends BasePresenter<LastCurrencyContract.ILastCurrencyView>
         implements LastCurrencyContract.ILastCurrencyPresenter {

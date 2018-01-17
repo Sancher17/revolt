@@ -26,11 +26,13 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.michaelrocks.paranoid.Obfuscate;
 import rx.functions.Action1;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
+@Obfuscate
 public class LastCurrencyActivity extends AppCompatActivity
         implements LastCurrencyContract.ILastCurrencyView, Action1<Void>, UpdateCurrenciesListener {
 
@@ -100,6 +102,7 @@ public class LastCurrencyActivity extends AppCompatActivity
 
     @Override
     public void onUpdateData(String code, Double amount) {
+        LOGGER.log("onUpdateData = " + code + " " + amount);
         lastCurrencyPresenter.getLastUpdatedCurrency(code, amount);
     }
 }

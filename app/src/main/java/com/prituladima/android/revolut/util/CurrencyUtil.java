@@ -4,9 +4,7 @@ import com.mynameismidori.currencypicker.ExtendedCurrency;
 
 public final class CurrencyUtil {
 
-    private CurrencyUtil() {
-
-    }
+    private CurrencyUtil() {}
 
     public static int getFlagResByISO(String iso){
         for(ExtendedCurrency currency: ExtendedCurrency.getAllCurrencies())

@@ -4,10 +4,10 @@ import com.prituladima.android.revolut.RevolutApplication;
 import com.prituladima.android.revolut.model.api.CurrencyAPI;
 import com.prituladima.android.revolut.model.db.HawkLocalStorage;
 import com.prituladima.android.revolut.model.dto.Currency;
+import com.prituladima.android.revolut.util.Mappers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -35,13 +35,7 @@ public class Repository {
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(remoteCurrencyDTO -> localStorage.saveCurrencies(remoteCurrencyDTO))
                 .onErrorReturn(throwable -> localStorage.getCurrencies())
-                .map((remoteCurrencyDTO) -> {
-                        List<Currency> list = new ArrayList<>();
-                        for(Map.Entry<String, Double> current: remoteCurrencyDTO.rates().entrySet())
-                            list.add(Currency.create(current.getKey(), current.getValue()));
-                        return list;
-                    }
-                )
+                .map(Mappers::mapRemoteToLocal)
                 .onErrorReturn(throwable -> new ArrayList<>());
     }
 

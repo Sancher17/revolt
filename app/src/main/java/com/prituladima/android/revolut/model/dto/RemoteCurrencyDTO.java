@@ -7,6 +7,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.LinkedHashMap;
 
+import io.michaelrocks.paranoid.Obfuscate;
+
+@Obfuscate
 @AutoValue
 public abstract class RemoteCurrencyDTO {
 

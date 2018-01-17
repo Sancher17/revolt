@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import io.michaelrocks.paranoid.Obfuscate;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -18,10 +19,15 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 import rx.Observable;
 
+@Obfuscate
 public interface CurrencyAPI {
 
-    @GET("latest")
-    Observable<RemoteCurrencyDTO> getCurrencies(@Query("base") String base, @Query("amount") Double amount);
+    String LATEST = "latest";
+    String BASE = "base";
+    String AMOUNT = "amount";
+
+    @GET(LATEST)
+    Observable<RemoteCurrencyDTO> getCurrencies(@Query(BASE) String base, @Query(AMOUNT) Double amount);
 
     class Factory {
 

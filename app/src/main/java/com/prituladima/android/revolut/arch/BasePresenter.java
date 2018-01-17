@@ -1,5 +1,8 @@
 package com.prituladima.android.revolut.arch;
 
+import io.michaelrocks.paranoid.Obfuscate;
+
+@Obfuscate
 public class BasePresenter<T extends IView> implements IPresenter<T> {
 
     private T mMvpView;
@@ -14,11 +17,11 @@ public class BasePresenter<T extends IView> implements IPresenter<T> {
         mMvpView = null;
     }
 
-    public boolean isViewAttached() {
+    private boolean isViewAttached() {
         return mMvpView != null;
     }
 
-    public T getMvpView() {
+    protected T getMvpView() {
         return mMvpView;
     }
 
@@ -26,8 +29,8 @@ public class BasePresenter<T extends IView> implements IPresenter<T> {
         if (!isViewAttached()) throw new MvpViewNotAttachedException();
     }
 
-    public static class MvpViewNotAttachedException extends RuntimeException {
-        public MvpViewNotAttachedException() {
+    private static class MvpViewNotAttachedException extends RuntimeException {
+        private MvpViewNotAttachedException() {
             super("Please call Presenter.attachView(MvpView) before" +
                     " requesting data to the Presenter");
         }
