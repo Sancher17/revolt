@@ -3,6 +3,8 @@ package com.prituladima.android.revolut.view.adapter;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,8 +38,8 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
     private static Logger LOGGER = Logger.build(LastCurrencyAdapter.class);
 
     private List<Currency> actualList = new ArrayList<>();
+    private boolean binding;
 
-    private LiteTextWatcher textWatcher;
     @Inject
     public Context context;
     @Inject
@@ -47,55 +49,46 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
     public LastCurrencyAdapter() {
         RevolutApplication.getInjector().inject(this);
         actualList.add(0, storage.getMainCurrency());
-        textWatcher = (s, start, before, count) -> {
-            Double value = Mappers.parseDouble(s.toString());
-            storage.saveMainCurrency(Currency.create(actualList.get(0).name(), value));
-            if(value.equals(0.0)) setZeroToALL();
-        };
     }
 
-    public void setZeroToALL(){
+    public void setZeroToALL() {
         List<Currency> zeroList = new ArrayList<>();
-        for (int i = 0; i < actualList.size(); i++) {
-            zeroList.add( Currency.create(actualList.get(i).name(), 0.0));
+        for (int i = 1; i < actualList.size(); i++) {
+            zeroList.add(Currency.create(actualList.get(i).name(), 0.0));
         }
         setData(zeroList);
     }
 
     public void setData(List<Currency> list) {
-        for (int index = actualList.size() - 1; index > 1; index--)
+        for (int index = actualList.size() - 1; index > 0; index--)
             actualList.remove(index);
         this.actualList.addAll(1, new ArrayList<>(list));
-        notifyItemRangeChanged(1, list.size());
+        if (!binding) notifyItemRangeChanged(1, list.size());
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list, parent, false), new MyCustomEditTextListener());
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+        binding = true;
         Currency current = actualList.get(position);
-        holder.currency_edit_text.setText(String.valueOf(current.value()));
+        holder.myCustomEditTextListener.updatePosition(position);
+
         holder.flag_image_view.setImageResource(getFlagResByISO(current.name()));
         holder.text_iso.setText(current.name());
         holder.text_name.setText(getCurrencyNameResByISO(current.name()));
         holder.card_view.setOnClickListener((view) -> moveToFirst(position));
-        if (position == 0) {
-            holder.currency_edit_text.setFocusable(true);
-            holder.currency_edit_text.addTextChangedListener(textWatcher);
-        }
-//        else{
-//            holder.currency_edit_text.setFocusable(false);
-//            holder.currency_edit_text.removeTextChangedListener(textWatcher);
-//        }
+
+        holder.currency_edit_text.setText(String.valueOf(current.value()));
+
+
+        binding = false;
     }
 
     private void moveToFirst(int position) {
-//        changedList = new ArrayList<>(actualList);
-//        changedList.add(0, changedList.remove(position));
-//        setData(changedList);
     }
 
     @Override
@@ -120,11 +113,46 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
         @BindView(R.id.text_name)
         TextView text_name;
 
-        public ViewHolder(View itemView) {
+        public MyCustomEditTextListener myCustomEditTextListener;
+
+        public ViewHolder(View itemView, MyCustomEditTextListener myCustomEditTextListener) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            this.myCustomEditTextListener = myCustomEditTextListener;
+            this.currency_edit_text.addTextChangedListener(myCustomEditTextListener);
         }
 
+    }
+
+
+    private class MyCustomEditTextListener implements TextWatcher {
+        private int position;
+
+        public void updatePosition(int position) {
+            this.position = position;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int i, int i2, int i3) {
+
+            if (position != 0) return;
+            Double value = Mappers.parseDouble(s.toString());
+            Currency updatedMainCurrency = Currency.create(storage.getMainCurrency().name(), value);
+            storage.saveMainCurrency(updatedMainCurrency);
+            actualList.remove(0);
+            actualList.add(0, updatedMainCurrency);
+
+            if (value.equals(0.0)) setZeroToALL();
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+        }
     }
 
 }
