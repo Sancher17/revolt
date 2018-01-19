@@ -47,7 +47,7 @@ public class RevolutApplication extends Application {
 
         Hawk.init(this)
                 .setParser(new HawkAutoValueParser())
-                .setLogInterceptor((message) -> LOGGER.log(message))
+                .setLogInterceptor(LOGGER::log)
                 .build();
 
     }

@@ -16,4 +16,12 @@ public final class Mappers {
         return list;
     }
 
+    public static Double parseDouble(String s){
+        try {
+            return Double.parseDouble(s);
+        }catch (NumberFormatException n){
+            return 0.0;
+        }
+    }
+
 }
