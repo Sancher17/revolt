@@ -1,6 +1,7 @@
 package com.prituladima.android.revolut.model;
 
 import com.prituladima.android.revolut.RevolutApplication;
+import com.prituladima.android.revolut.arch.IRepository;
 import com.prituladima.android.revolut.model.api.CurrencyAPI;
 import com.prituladima.android.revolut.model.db.HawkLocalStorage;
 import com.prituladima.android.revolut.model.dto.Currency;
@@ -17,7 +18,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 @Singleton
-public class Repository {
+public class Repository implements IRepository {
 
     @Inject
     CurrencyAPI currencyAPI;
@@ -35,6 +36,7 @@ public class Repository {
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(remoteCurrencyDTO -> localStorage.saveCurrencies(remoteCurrencyDTO))
                 .onErrorReturn(throwable -> localStorage.getCurrencies())
+                .filter((remoteCurrencyDTO) -> !amount.equals(0.0))
                 .map(Mappers::mapRemoteToLocal)
                 .onErrorReturn(throwable -> new ArrayList<>());
     }

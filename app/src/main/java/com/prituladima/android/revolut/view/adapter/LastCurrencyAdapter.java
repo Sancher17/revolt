@@ -12,11 +12,11 @@ import android.widget.TextView;
 
 import com.prituladima.android.revolut.R;
 import com.prituladima.android.revolut.RevolutApplication;
+import com.prituladima.android.revolut.model.db.HawkLocalStorage;
 import com.prituladima.android.revolut.model.dto.Currency;
 import com.prituladima.android.revolut.util.LiteTextWatcher;
 import com.prituladima.android.revolut.util.Logger;
-import com.prituladima.android.revolut.util.UpdateCurrenciesListener;
-import com.prituladima.android.revolut.view.LastCurrencyActivity;
+import com.prituladima.android.revolut.util.Mappers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,22 +37,36 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
 
     private List<Currency> actualList = new ArrayList<>();
 
-    private UpdateCurrenciesListener textWatcher;
+    private LiteTextWatcher textWatcher;
     @Inject
     public Context context;
+    @Inject
+    public HawkLocalStorage storage;
 
     @Inject
     public LastCurrencyAdapter() {
         RevolutApplication.getInjector().inject(this);
+        actualList.add(0, storage.getMainCurrency());
+        textWatcher = (s, start, before, count) -> {
+            Double value = Mappers.parseDouble(s.toString());
+            storage.saveMainCurrency(Currency.create(actualList.get(0).name(), value));
+            if(value.equals(0.0)) setZeroToALL();
+        };
+    }
+
+    public void setZeroToALL(){
+        List<Currency> zeroList = new ArrayList<>();
+        for (int i = 0; i < actualList.size(); i++) {
+            zeroList.add( Currency.create(actualList.get(i).name(), 0.0));
+        }
+        setData(zeroList);
     }
 
     public void setData(List<Currency> list) {
-        this.actualList = list;
-        notifyDataSetChanged();
-    }
-
-    public void setTextListener(UpdateCurrenciesListener watcher) {
-        textWatcher = watcher;
+        for (int index = actualList.size() - 1; index > 1; index--)
+            actualList.remove(index);
+        this.actualList.addAll(1, new ArrayList<>(list));
+        notifyItemRangeChanged(1, list.size());
     }
 
     @Override
@@ -68,16 +82,20 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
         holder.text_iso.setText(current.name());
         holder.text_name.setText(getCurrencyNameResByISO(current.name()));
         holder.card_view.setOnClickListener((view) -> moveToFirst(position));
+        if (position == 0) {
+            holder.currency_edit_text.setFocusable(true);
+            holder.currency_edit_text.addTextChangedListener(textWatcher);
+        }
+//        else{
+//            holder.currency_edit_text.setFocusable(false);
+//            holder.currency_edit_text.removeTextChangedListener(textWatcher);
+//        }
     }
 
     private void moveToFirst(int position) {
 //        changedList = new ArrayList<>(actualList);
 //        changedList.add(0, changedList.remove(position));
 //        setData(changedList);
-    }
-
-    private void updateList(String code, Double amount) {
-        textWatcher.onUpdateData(code, amount);
     }
 
     @Override

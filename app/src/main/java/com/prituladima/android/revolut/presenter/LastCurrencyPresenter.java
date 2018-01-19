@@ -7,6 +7,7 @@ import com.prituladima.android.revolut.RevolutApplication;
 import com.prituladima.android.revolut.arch.BasePresenter;
 import com.prituladima.android.revolut.arch.LastCurrencyContract;
 import com.prituladima.android.revolut.model.Repository;
+import com.prituladima.android.revolut.model.db.HawkLocalStorage;
 import com.prituladima.android.revolut.services.UpdateService;
 import com.prituladima.android.revolut.util.Logger;
 
@@ -29,6 +30,8 @@ public class LastCurrencyPresenter extends BasePresenter<LastCurrencyContract.IL
     Repository repository;
     @Inject
     Context context;
+    @Inject
+    HawkLocalStorage storage;
 
     @Inject
     public LastCurrencyPresenter() {
@@ -69,7 +72,7 @@ public class LastCurrencyPresenter extends BasePresenter<LastCurrencyContract.IL
 
     @Override
     public void getLastUpdatedCurrency() {
-        getLastUpdatedCurrency("USD", 1.0);
+        getLastUpdatedCurrency(storage.getMainCurrency().name(), storage.getMainCurrency().value());
     }
 
 
