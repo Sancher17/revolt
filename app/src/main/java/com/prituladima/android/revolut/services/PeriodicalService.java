@@ -17,9 +17,9 @@ import rx.Observable;
 import rx.Subscription;
 
 @Obfuscate
-public class UpdateService extends Service {
+public class PeriodicalService extends Service {
 
-    private static Logger LOGGER = Logger.build(UpdateService.class);
+    private static Logger LOGGER = Logger.build(PeriodicalService.class);
 
     public static final long PERIOD_MS = 1;
     private Subscription subscription;
@@ -28,7 +28,7 @@ public class UpdateService extends Service {
     LastCurrencyPresenter presenter;
 
     @Inject
-    public UpdateService() {
+    public PeriodicalService() {
         RevolutApplication.getInjector().inject(this);
     }
 

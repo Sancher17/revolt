@@ -62,18 +62,18 @@ public class LastCurrencyActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStart() {
+    protected void onResume() {
         LOGGER.log("onStart");
-        super.onStart();
+        super.onResume();
         lastCurrencyPresenter.attachView(this);
 
     }
 
     @Override
-    protected void onStop() {
+    protected void onPause() {
         LOGGER.log("onStop");
         lastCurrencyPresenter.detachView();
-        super.onStop();
+        super.onPause();
     }
 
     @Override

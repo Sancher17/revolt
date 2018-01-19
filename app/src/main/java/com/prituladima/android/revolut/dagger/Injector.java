@@ -3,7 +3,7 @@ package com.prituladima.android.revolut.dagger;
 import com.prituladima.android.revolut.RevolutApplication;
 import com.prituladima.android.revolut.model.Repository;
 import com.prituladima.android.revolut.presenter.LastCurrencyPresenter;
-import com.prituladima.android.revolut.services.UpdateService;
+import com.prituladima.android.revolut.services.PeriodicalService;
 import com.prituladima.android.revolut.view.activities.LastCurrencyActivity;
 import com.prituladima.android.revolut.view.adapter.LastCurrencyAdapter;
 
@@ -32,6 +32,6 @@ public interface Injector {
 
     void inject(LastCurrencyAdapter adapter);
 
-    void inject(UpdateService updateService);
+    void inject(PeriodicalService periodicalService);
 
 }

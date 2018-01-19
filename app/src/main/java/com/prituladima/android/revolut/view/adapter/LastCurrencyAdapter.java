@@ -3,8 +3,6 @@ package com.prituladima.android.revolut.view.adapter;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +27,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.michaelrocks.paranoid.Obfuscate;
 
+import static android.text.InputType.TYPE_CLASS_NUMBER;
 import static com.prituladima.android.revolut.util.CurrencyUtil.getCurrencyNameResByISO;
 import static com.prituladima.android.revolut.util.CurrencyUtil.getFlagResByISO;
 
@@ -51,7 +50,7 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
         actualList.add(0, storage.getMainCurrency());
     }
 
-    public void setZeroToALL() {
+    private void setDataWithZero() {
         List<Currency> zeroList = new ArrayList<>();
         for (int i = 1; i < actualList.size(); i++) {
             zeroList.add(Currency.create(actualList.get(i).name(), 0.0));
@@ -76,19 +75,17 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
         binding = true;
         Currency current = actualList.get(position);
         holder.myCustomEditTextListener.updatePosition(position);
-
         holder.flag_image_view.setImageResource(getFlagResByISO(current.name()));
         holder.text_iso.setText(current.name());
         holder.text_name.setText(getCurrencyNameResByISO(current.name()));
-        holder.card_view.setOnClickListener((view) -> moveToFirst(position));
-
+        holder.card_view.setOnClickListener((view) -> smoothToFirstElementFromPosition(position));
         holder.currency_edit_text.setText(String.valueOf(current.value()));
-
+        holder.setFocusableIfNeed(position);
 
         binding = false;
     }
 
-    private void moveToFirst(int position) {
+    private void smoothToFirstElementFromPosition(int position) {
     }
 
     @Override
@@ -115,26 +112,26 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
 
         public MyCustomEditTextListener myCustomEditTextListener;
 
-        public ViewHolder(View itemView, MyCustomEditTextListener myCustomEditTextListener) {
+        public ViewHolder(View itemView, MyCustomEditTextListener listener) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            this.myCustomEditTextListener = myCustomEditTextListener;
-            this.currency_edit_text.addTextChangedListener(myCustomEditTextListener);
+            myCustomEditTextListener = listener;
+            currency_edit_text.addTextChangedListener(myCustomEditTextListener);
+        }
+
+        public void setFocusableIfNeed(int position){
+            currency_edit_text.setInputType(position == 0 ? TYPE_CLASS_NUMBER : 0);
         }
 
     }
 
 
-    private class MyCustomEditTextListener implements TextWatcher {
+    private class MyCustomEditTextListener extends LiteTextWatcher {
+
         private int position;
 
         public void updatePosition(int position) {
             this.position = position;
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
         }
 
         @Override
@@ -147,11 +144,7 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
             actualList.remove(0);
             actualList.add(0, updatedMainCurrency);
 
-            if (value.equals(0.0)) setZeroToALL();
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
+            if (value.equals(0.0)) setDataWithZero();
         }
     }
 

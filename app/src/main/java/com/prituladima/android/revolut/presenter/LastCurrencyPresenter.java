@@ -8,7 +8,7 @@ import com.prituladima.android.revolut.arch.BasePresenter;
 import com.prituladima.android.revolut.arch.LastCurrencyContract;
 import com.prituladima.android.revolut.model.Repository;
 import com.prituladima.android.revolut.model.db.HawkLocalStorage;
-import com.prituladima.android.revolut.services.UpdateService;
+import com.prituladima.android.revolut.services.PeriodicalService;
 import com.prituladima.android.revolut.util.Logger;
 
 import javax.inject.Inject;
@@ -43,16 +43,16 @@ public class LastCurrencyPresenter extends BasePresenter<LastCurrencyContract.IL
         LOGGER.log("attachView");
         super.attachView(view);
         getLastUpdatedCurrency();
-        context.startService(new Intent(context, UpdateService.class));
+        context.startService(new Intent(context, PeriodicalService.class));
     }
 
     @Override
     public void detachView() {
         LOGGER.log("detachView");
+        context.stopService(new Intent(context, PeriodicalService.class));
         if (subscription != null && subscription.isUnsubscribed()) {
             subscription.unsubscribe();
         }
-        context.stopService(new Intent(context, UpdateService.class));
         super.detachView();
     }
 

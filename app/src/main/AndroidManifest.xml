@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".services.UpdateService" />
+        <service android:name=".services.PeriodicalService" />
     </application>
 
 </manifest>
