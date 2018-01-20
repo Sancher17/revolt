@@ -15,9 +15,7 @@ import dagger.Component;
 @Component(
         modules = {
                 ContextModule.class,
-                ApiModule.class,
-                BusModule.class,
-                UIModule.class
+                ApiModule.class
         }
 )
 public interface Injector {

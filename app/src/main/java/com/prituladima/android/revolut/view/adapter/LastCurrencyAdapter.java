@@ -53,15 +53,17 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
         actualList.add(0, storage.getMainCurrency());
     }
 
-    private void setDataWithZero() {
+    private void setDefaultCurrencyValues() {
+        LOGGER.log("setDefaultCurrencyValues");
         List<Currency> zeroList = new ArrayList<>();
         for (int i = 1; i < actualList.size(); i++) {
             zeroList.add(Currency.create(actualList.get(i).name(), 0.0));
         }
-        setData(zeroList);
+        setVolatileCurrencyValues(zeroList);
     }
 
-    public void setData(List<Currency> list) {
+    public void setVolatileCurrencyValues(List<Currency> list) {
+        LOGGER.log("setVolatileCurrencyValues");
         for (int index = actualList.size() - 1; index > 0; index--)
             actualList.remove(index);
         this.actualList.addAll(1, new ArrayList<>(list));
@@ -85,11 +87,11 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
         binding = true;
         Currency current = actualList.get(position);
         holder.myCustomEditTextListener.updatePosition(position);
-        holder.flag_image_view.setImageResource(getFlagResByISO(current.name()));
-        holder.text_iso.setText(current.name());
-        holder.text_name.setText(getCurrencyNameResByISO(current.name()));
-        holder.card_view.setOnClickListener((view) -> smoothToFirstElementFromPosition(position));
-        holder.currency_edit_text.setText(String.valueOf(current.value()));
+        holder.flagImageView.setImageResource(getFlagResByISO(current.name()));
+        holder.textIso.setText(current.name());
+        holder.textView.setText(getCurrencyNameResByISO(current.name()));
+        holder.cardView.setOnClickListener((view) -> smoothToFirstElementFromPosition(position));
+        holder.currencyEditText.setText(String.valueOf(current.value()));
         holder.setFocusableIfNeed(position);
 
         binding = false;
@@ -118,19 +120,19 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
     class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.card_view)
-        CardView card_view;
+        CardView cardView;
 
         @BindView(R.id.currency_edit_text)
-        EditText currency_edit_text;
+        EditText currencyEditText;
 
         @BindView(R.id.flag_image_view)
-        ImageView flag_image_view;
+        ImageView flagImageView;
 
         @BindView(R.id.text_iso)
-        TextView text_iso;
+        TextView textIso;
 
         @BindView(R.id.text_name)
-        TextView text_name;
+        TextView textView;
 
         public MyCustomEditTextListener myCustomEditTextListener;
 
@@ -138,11 +140,11 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
             super(itemView);
             ButterKnife.bind(this, itemView);
             myCustomEditTextListener = listener;
-            currency_edit_text.addTextChangedListener(myCustomEditTextListener);
+            currencyEditText.addTextChangedListener(myCustomEditTextListener);
         }
 
         public void setFocusableIfNeed(int position){
-            currency_edit_text.setInputType(position == 0 ? TYPE_CLASS_NUMBER : 0);
+            currencyEditText.setInputType(position == 0 ? TYPE_CLASS_NUMBER : 0);
         }
 
     }
@@ -166,7 +168,7 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
             actualList.remove(0);
             actualList.add(0, updatedMainCurrency);
 
-            if (value.equals(0.0)) setDataWithZero();
+            if (value.equals(0.0)) setDefaultCurrencyValues();
         }
     }
 

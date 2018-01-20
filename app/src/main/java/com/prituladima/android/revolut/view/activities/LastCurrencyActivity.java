@@ -23,30 +23,25 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.michaelrocks.paranoid.Obfuscate;
-import rx.functions.Action1;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 @Obfuscate
 public class LastCurrencyActivity extends AppCompatActivity
-        implements LastCurrencyContract.ILastCurrencyView, Action1<Void> {
+        implements LastCurrencyContract.ILastCurrencyView{
 
     private static Logger LOGGER = Logger.build(LastCurrencyActivity.class);
 
     @Inject
-    LastCurrencyPresenter lastCurrencyPresenter;
+    LastCurrencyPresenter presenter;
     @Inject
     LastCurrencyAdapter adapter;
-    @Inject
-    LinearLayoutManager linearLayoutManager;
-    @Inject
-    DefaultItemAnimator defaultItemAnimator;
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
     @BindView(R.id.empty_view)
-    LinearLayout empty_view;
+    LinearLayout emptyView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,42 +51,36 @@ public class LastCurrencyActivity extends AppCompatActivity
         RevolutApplication.getInjector().inject(this);
         ButterKnife.bind(this);
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        empty_view.setVisibility(INVISIBLE);
+        emptyView.setVisibility(INVISIBLE);
     }
 
     @Override
     protected void onResume() {
         LOGGER.log("onStart");
         super.onResume();
-        lastCurrencyPresenter.attachView(this);
+        presenter.attachView(this);
 
     }
 
     @Override
     protected void onPause() {
         LOGGER.log("onStop");
-        lastCurrencyPresenter.detachView();
+        presenter.detachView();
         super.onPause();
     }
 
     @Override
     public void onCurrencyUpdated(List<Currency> list) {
         LOGGER.log("onCurrencyUpdated - " + list.toString());
-        adapter.setData(list);
+        adapter.setVolatileCurrencyValues(list);
     }
 
     @Override
-    public void onNoData() {
-        LOGGER.log("onNoData");
-        empty_view.setVisibility(VISIBLE);
-    }
-
-    @Override
-    public void call(Void aVoid) {
-        LOGGER.log("updating data");
-        lastCurrencyPresenter.getLastUpdatedCurrency();
+    public void onNoDataAvailable() {
+        LOGGER.log("onNoDataAvailable");
+        emptyView.setVisibility(VISIBLE);
     }
 
 }

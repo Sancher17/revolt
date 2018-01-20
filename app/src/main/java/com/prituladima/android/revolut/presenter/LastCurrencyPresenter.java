@@ -65,7 +65,7 @@ public class LastCurrencyPresenter extends BasePresenter<LastCurrencyContract.IL
                             if (!list.isEmpty())
                                 getMvpView().onCurrencyUpdated(list);
                             else
-                                getMvpView().onNoData();
+                                getMvpView().onNoDataAvailable();
                         }, LOGGER::error
                 );
     }
