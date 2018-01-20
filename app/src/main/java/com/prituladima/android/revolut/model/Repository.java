@@ -34,7 +34,7 @@ public class Repository implements IRepository {
         return currencyAPI.getCurrencies(base, amount)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(remoteCurrencyDTO -> localStorage.saveCurrencies(remoteCurrencyDTO))
+                .map(localStorage::saveCurrencies)
                 .onErrorReturn(throwable -> localStorage.getCurrencies())
                 .filter((remoteCurrencyDTO) -> !amount.equals(0.0))
                 .map(Mappers::mapRemoteToLocal)

@@ -75,6 +75,7 @@ public class LastCurrencyActivity extends AppCompatActivity
     public void onCurrencyUpdated(List<Currency> list) {
         LOGGER.log("onCurrencyUpdated - " + list.toString());
         adapter.setVolatileCurrencyValues(list);
+        emptyView.setVisibility(INVISIBLE);
     }
 
     @Override
