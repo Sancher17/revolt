@@ -1,6 +1,7 @@
 package com.prituladima.android.revolut.view.adapter;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -39,6 +40,8 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
     private List<Currency> actualList = new ArrayList<>();
     private boolean binding;
 
+    private RecyclerView mRecyclerView;
+
     @Inject
     public Context context;
     @Inject
@@ -66,6 +69,13 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
     }
 
     @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+
+        mRecyclerView = recyclerView;
+    }
+
+    @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list, parent, false), new MyCustomEditTextListener());
     }
@@ -86,6 +96,18 @@ public class LastCurrencyAdapter extends RecyclerView.Adapter<LastCurrencyAdapte
     }
 
     private void smoothToFirstElementFromPosition(int position) {
+        Currency newMainCurrency = actualList.get(position);
+
+        actualList.remove(position);
+        actualList.add(0, newMainCurrency);
+
+        if (!binding) {
+            mRecyclerView.scrollToPosition(0);
+            notifyItemMoved(position, 0);
+            new Handler().postDelayed(this::notifyDataSetChanged, 500);
+        }
+
+        storage.saveMainCurrency(newMainCurrency);
     }
 
     @Override

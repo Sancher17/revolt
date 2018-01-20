@@ -32,7 +32,7 @@ public class HawkLocalStorage {
     }
 
     public Currency getMainCurrency(){
-        return Hawk.get(getMainCurrecyKey(), Currency.create("USD", 100.0));
+        return Hawk.get(getMainCurrecyKey(), Currency.create("AUD", 100.0));
     }
 
 }

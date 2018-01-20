@@ -57,7 +57,7 @@ public class LastCurrencyActivity extends AppCompatActivity
         ButterKnife.bind(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setItemAnimator(null);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         empty_view.setVisibility(INVISIBLE);
     }
 
