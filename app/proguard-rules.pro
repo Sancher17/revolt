@@ -18,6 +18,9 @@
 -keep class javax.annotation.* { *; }
 -dontwarn javax.**
 
+
+-dontwarn com.prituladima.android.revolut.**
+
 -keep class * extends dagger.internal.Binding
 -keep class * extends dagger.internal.ModuleAdapter
 -keep class * extends dagger.internal.StaticInjection
